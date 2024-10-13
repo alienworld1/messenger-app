@@ -3,6 +3,7 @@
 import { PrismaClient } from '@prisma/client';
 import { z } from 'zod';
 import bcrypt from 'bcryptjs';
+import supabase from '@/app/utils/supabase';
 
 const prisma = new PrismaClient();
 
@@ -63,13 +64,17 @@ export async function createUser(
   const { email, password, username } = validatedFields.data;
   const hashedPassword = await bcrypt.hash(password, 10);
 
+  const defaultProfilePictureUrl = supabase.storage
+    .from('convolink-images')
+    .getPublicUrl('default-avatar.png');
+
   try {
     await prisma.user.create({
       data: {
         email,
         password: hashedPassword,
         username,
-        profilePictureUrl: '',
+        profilePictureUrl: defaultProfilePictureUrl.data.publicUrl,
       },
     });
   } catch (error) {

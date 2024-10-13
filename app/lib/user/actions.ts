@@ -3,9 +3,11 @@
 import { PrismaClient } from '@prisma/client';
 import { z } from 'zod';
 import bcrypt from 'bcryptjs';
-import supabase from '@/app/utils/supabase';
+import { createClient } from '@/app/utils/supabase';
+import { cookies } from 'next/headers';
 
 const prisma = new PrismaClient();
+const supabase = createClient(cookies());
 
 const UserSchema = z
   .object({

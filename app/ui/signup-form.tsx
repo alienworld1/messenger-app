@@ -9,7 +9,6 @@ export default function SignupForm() {
   const initialState: UserState = { message: null, errors: {} };
   const [state, formAction] = useFormState(createUser, initialState);
   const { pending } = useFormStatus();
-  console.log(state);
 
   return (
     <form className="space-y-4" action={formAction}>

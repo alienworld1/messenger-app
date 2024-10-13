@@ -1,0 +1,57 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id                      String           @id @default(uuid())
+  username                String           @db.VarChar(32)
+  password                String
+  email                   String           @unique @db.VarChar(255)
+  isOnline                Boolean          @default(false)
+  profilePictureUrl       String
+  privateMessagesSent     PrivateMessage[] @relation("private-messages-sent")
+  privateMessagesReceived PrivateMessage[] @relation("private-messages-received")
+  groups                  Group[]
+  groupMessagesSent       GroupMessage[]   @relation("group-messages-sent")
+}
+
+model PrivateMessage {
+  id          String   @id @default(uuid())
+  content     String
+  sentAt      DateTime @default(now())
+  sender      User     @relation("private-messages-sent", fields: [senderId], references: [id])
+  senderId    String
+  recipient   User     @relation("private-messages-received", fields: [recipientId], references: [id])
+  recipientId String
+  imageUrl    String?
+}
+
+model Group {
+  id       String         @id @default(uuid())
+  name     String
+  members  User[]
+  messages GroupMessage[]
+}
+
+model GroupMessage {
+  id       String   @id @default(uuid())
+  content  String
+  sentAt   DateTime @default(now())
+  sender   User     @relation("group-messages-sent", fields: [senderId], references: [id])
+  senderId String
+  group    Group    @relation(fields: [groupId], references: [id])
+  groupId  String
+  imageUrl String?
+}

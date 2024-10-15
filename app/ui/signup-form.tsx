@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useFormState, useFormStatus } from 'react-dom';
 
-import { UserState, createUser } from '../lib/user/actions';
+import { UserState, createUser } from '../lib/actions';
 
 export default function SignupForm() {
   const initialState: UserState = { message: null, errors: {} };

@@ -1,8 +1,24 @@
+'use client';
+
 import Link from 'next/link';
+import { useFormState, useFormStatus } from 'react-dom';
+import { login } from '../lib/auth';
+import { useEffect } from 'react';
+import { redirect } from 'next/navigation';
 
 export default function LoginForm() {
+  const initialState: string | null = '';
+  const [state, formAction] = useFormState(login, initialState);
+  const { pending } = useFormStatus();
+
+  useEffect(() => {
+    if (state === null) {
+      redirect('/home');
+    }
+  }, [state]);
+
   return (
-    <form className="space-y-4">
+    <form className="space-y-4" action={formAction}>
       <section>
         <label htmlFor="email" className="block text-sm font-medium text-white">
           Email
@@ -32,11 +48,17 @@ export default function LoginForm() {
           placeholder="Enter your password here..."
         />
       </section>
+      <div id="login-error">
+        {state && (
+          <p className="mt-2 text-red-500 text-sm font-semibold">{state}</p>
+        )}
+      </div>
       <button
         type="submit"
         className="w-full bg-accent-light hover:bg-accent-dark text-white font-bold py-2 px-4 rounded-md transition-colors duration-300 ease-in-out"
+        disabled={pending}
       >
-        Sign Up
+        Log In
       </button>
       <p className="text-white">
         Don&apos;t have an account?{' '}

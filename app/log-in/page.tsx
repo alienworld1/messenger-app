@@ -1,6 +1,15 @@
+import { getServerSession } from 'next-auth';
+import { redirect } from 'next/navigation';
+
 import LoginForm from '../ui/login-form';
 
-export default function Page() {
+export default async function Page() {
+  const session = await getServerSession();
+
+  if (session) {
+    redirect('/home');
+  }
+
   return (
     <main className="h-screen flex justify-center items-center">
       <div className="w-full max-w-md bg-primary/30 backdrop-blur-md shadow-lg rounded-lg overflow-hidden">

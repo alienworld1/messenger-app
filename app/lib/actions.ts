@@ -1,12 +1,12 @@
 'use server';
 
-import { PrismaClient } from '@prisma/client';
-import { z } from 'zod';
 import bcrypt from 'bcryptjs';
+import { z } from 'zod';
 import { createClient } from '@/app/utils/supabase';
 import { cookies } from 'next/headers';
 
-const prisma = new PrismaClient();
+import prisma from '../utils/prisma';
+
 const supabase = createClient(cookies());
 
 const UserSchema = z

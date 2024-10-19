@@ -25,8 +25,10 @@ model User {
   privateMessagesReceived PrivateMessage[] @relation("private-messages-received")
   groups                  Group[]
   groupMessagesSent       GroupMessage[]   @relation("group-messages-sent")
-  friends User[] @relation("friends")
-  friendsOf User[] @relation("friends")
+  friends                 User[]           @relation("friends")
+  friendsOf               User[]           @relation("friends")
+  sentFriendRequests      User[]           @relation("friend-requests")
+  incomingFriendRequests  User[]           @relation("friend-requests")
 }
 
 model PrivateMessage {

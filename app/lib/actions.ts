@@ -88,3 +88,73 @@ export async function createUser(
 
   return { message: null };
 }
+
+// Used in search-friend-form
+export type FriendRequestState = {
+  message?: string;
+  success?: boolean;
+};
+
+export async function sendFriendRequest(
+  currentUserEmail: string,
+  previousState: FriendRequestState,
+  formData: FormData,
+): Promise<FriendRequestState> {
+  const email = formData.get('email');
+  const emailSchema = z
+    .string()
+    .email({ message: 'Enter a valid email address' })
+    .superRefine(async (email, ctx) => {
+      const user = await prisma.user.findFirst({
+        where: { email },
+        include: { sentFriendRequests: true },
+      });
+      if (!user) {
+        ctx.addIssue({
+          message: 'The provided email address was not found',
+          code: z.ZodIssueCode.custom,
+        });
+        return;
+      }
+
+      if (user.sentFriendRequests.some(friend => email === friend.email)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "You've already sent a friend request to this user.",
+        });
+      }
+    });
+
+  const parsedEmail = await emailSchema.safeParseAsync(email);
+  if (!parsedEmail.success) {
+    return {
+      success: false,
+      message: 'The entered email address was invalid, or not found',
+    };
+  }
+
+  try {
+    await prisma.user.update({
+      where: {
+        email: currentUserEmail,
+      },
+      data: {
+        sentFriendRequests: {
+          connect: {
+            email: parsedEmail.data,
+          },
+        },
+      },
+    });
+  } catch {
+    return {
+      message: 'Database Error: Unable to send friend request',
+      success: false,
+    };
+  }
+
+  return {
+    success: true,
+    message: 'Sent friend request!',
+  };
+}

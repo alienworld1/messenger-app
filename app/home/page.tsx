@@ -1,23 +1,13 @@
 import { getServerSession } from 'next-auth';
-import { redirect } from 'next/navigation';
-
-import SideNav from '../ui/dashboard/sidenav';
-import prisma from '../utils/prisma';
+import SearchFriendForm from '../ui/dashboard/search-friend-form';
 
 export default async function Page() {
   const session = await getServerSession();
-  if (!session) {
-    redirect('/');
-  }
-
-  const user = await prisma.user.findFirst({
-    where: { email: session.user?.email || '' },
-  });
-  if (!user) redirect('/');
 
   return (
-    <div className="h-screen flex">
-      <SideNav user={user} />
+    <div className="h-full w-full flex justify-center items-center flex-col gap-6 cursor-default">
+      <h1 className="text-3xl text-slate-300 font-semibold">Add a friend</h1>
+      <SearchFriendForm currentUserEmail={session!.user!.email || ''} />
     </div>
   );
 }

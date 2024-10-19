@@ -8,7 +8,7 @@ import SignOut from './sign-out';
 
 export default function SideNav({ user }: { user: User }) {
   return (
-    <div className="w-1/3 m-4 bg-primary/50 rounded max-w-xs flex flex-col">
+    <div className="w-1/3 m-4 bg-primary/50 rounded max-w-xs flex flex-col cursor-default">
       <header className="flex m-4 gap-4">
         <ProfilePicture
           username={user.username}
@@ -20,7 +20,18 @@ export default function SideNav({ user }: { user: User }) {
           <h3 className="text-slate-300 font-medium text-sm">{user.email}</h3>
         </div>
       </header>
-      <main className="flex-1"></main>
+      <main className="flex-1">
+        <nav>
+          <ul className="flex justify-center text-xl font-semibold text-slate-300 border-y-2 border-primary py-1">
+            <li className="hover:bg-bluegray/40 rounded px-8 py-1 cursor-pointer">
+              Friends
+            </li>
+            <li className="hover:bg-bluegray/40 rounded px-8 py-1 cursor-pointer">
+              Groups
+            </li>
+          </ul>
+        </nav>
+      </main>
       <footer className="flex flex-col py-4 px-2 gap-4">
         <Link
           href={'/account'}

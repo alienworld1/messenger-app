@@ -1,12 +1,21 @@
 import Link from 'next/link';
 import Icon from '@mdi/react';
-import { User } from '@prisma/client';
+import { User, Group } from '@prisma/client';
 import { mdiAccountEdit } from '@mdi/js';
 
 import ProfilePicture from '../profile-picture';
 import SignOut from './sign-out';
+import FriendList from './friend-list';
 
-export default function SideNav({ user }: { user: User }) {
+export default function SideNav({
+  user,
+  friends,
+  groups,
+}: {
+  user: User;
+  friends: User[];
+  groups: Group[];
+}) {
   return (
     <div className="w-1/3 m-4 bg-primary/50 rounded max-w-xs flex flex-col cursor-default">
       <header className="flex m-4 gap-4">
@@ -21,16 +30,7 @@ export default function SideNav({ user }: { user: User }) {
         </div>
       </header>
       <main className="flex-1">
-        <nav>
-          <ul className="flex justify-center text-xl font-semibold text-slate-300 border-y-2 border-primary py-1">
-            <li className="hover:bg-bluegray/40 rounded px-8 py-1 cursor-pointer">
-              Friends
-            </li>
-            <li className="hover:bg-bluegray/40 rounded px-8 py-1 cursor-pointer">
-              Groups
-            </li>
-          </ul>
-        </nav>
+        <FriendList friends={friends} groups={groups} />
       </main>
       <footer className="flex flex-col py-4 px-2 gap-4">
         <Link

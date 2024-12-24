@@ -3,9 +3,9 @@
 import Icon from '@mdi/react';
 import { mdiSearchWeb } from '@mdi/js';
 import { useFormState, useFormStatus } from 'react-dom';
-import { FriendRequestState, sendFriendRequest } from '@/app/lib/actions';
+import { SimpleFormState, sendFriendRequest } from '@/app/lib/actions';
 
-const initialState: FriendRequestState = {};
+const initialState: SimpleFormState = {};
 
 export default function SearchFriendForm({
   currentUserEmail,

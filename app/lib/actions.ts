@@ -4,6 +4,7 @@ import bcrypt from 'bcryptjs';
 import { z } from 'zod';
 import { createClient } from '@/app/utils/supabase';
 import { cookies } from 'next/headers';
+import { revalidatePath } from 'next/cache';
 
 import prisma from '../utils/prisma';
 
@@ -90,16 +91,16 @@ export async function createUser(
 }
 
 // Used in search-friend-form
-export type FriendRequestState = {
+export type SimpleFormState = {
   message?: string;
   success?: boolean;
 };
 
 export async function sendFriendRequest(
   currentUserEmail: string,
-  previousState: FriendRequestState,
+  previousState: SimpleFormState,
   formData: FormData,
-): Promise<FriendRequestState> {
+): Promise<SimpleFormState> {
   const email = formData.get('email');
   const emailSchema = z
     .string()
@@ -157,4 +158,57 @@ export async function sendFriendRequest(
     success: true,
     message: 'Sent friend request!',
   };
+}
+
+const EditAccountSchema = z.object({
+  username: z
+    .string()
+    .min(3, { message: 'Username must be at least 3 characters long' })
+    .max(32, { message: 'Username cannot exceed 32 characters in length' }),
+});
+
+export async function editAccount(
+  userId: string,
+  previousState: SimpleFormState,
+  formData: FormData,
+): Promise<SimpleFormState> {
+  const username = formData.get('username');
+  const profilePicture = formData.get('profile-picture');
+  const parsedUsername = EditAccountSchema.safeParse({ username });
+
+  if (!parsedUsername.success) {
+    return {
+      message: parsedUsername.error.message,
+      success: false,
+    };
+  }
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: {
+      username: parsedUsername.data.username,
+    },
+  });
+
+  if (profilePicture) {
+    const { data, error } = await supabase.storage
+      .from('convolink-images')
+      .upload(`profile-pictures/${userId}`, profilePicture);
+    if (error) {
+      console.error('Unable to upload profile picture to storage:', error);
+      return { success: false, message: 'Unable to upload profile picture' };
+    }
+    const profilePictureUrl = supabase.storage
+      .from('convolink-images')
+      .getPublicUrl(data.path);
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        profilePictureUrl: profilePictureUrl.data.publicUrl,
+      },
+    });
+  }
+
+  revalidatePath('/home');
+  return { success: true, message: 'Account updated successfully!' };
 }

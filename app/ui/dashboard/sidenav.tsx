@@ -34,7 +34,7 @@ export default function SideNav({ user }: { user: User }) {
       </main>
       <footer className="flex flex-col py-4 px-2 gap-4">
         <Link
-          href={'/account'}
+          href={'/home/account'}
           className="text-slate-300 font-semibold text-2xl flex items-center gap-2 p-2 w-full rounded hover:bg-bluegray/30"
         >
           <Icon path={mdiAccountEdit} size={1.5} className="inline" />

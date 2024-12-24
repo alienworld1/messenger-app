@@ -1,6 +1,7 @@
 import { getServerSession } from 'next-auth';
 import { redirect } from 'next/navigation';
 import React from 'react';
+import { Commet } from 'react-loading-indicators';
 
 import SideNav from '../ui/dashboard/sidenav';
 import prisma from '../utils/prisma';
@@ -23,7 +24,11 @@ export default async function Page({
   return (
     <div className="h-screen flex gap-2">
       <SideNav user={user} />
-      <div className="flex-1 bg-primary/40 rounded m-4">{children}</div>
+      <div className="flex-1 bg-primary/40 rounded m-4">
+        <React.Suspense fallback={<Commet color="#e2ede2" size="medium" />}>
+          {children}
+        </React.Suspense>
+      </div>
     </div>
   );
 }
